@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Speed Test</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, rgb(243, 238, 238), rgb(166, 180, 166));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            background: rgb(243, 241, 241);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            color: #171616;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #121010;
+            font-size: 15px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat {
+            background: #f5f6fa;
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .stat h3 {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .stat span {
+            font-size: 26px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .timer-box {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .timer-box label {
+            font-size: 14px;
+            color: #0f0e0e;
+            margin-right: 10px;
+        }
+
+        #timeSelect {
+            padding: 8px 15px;
+            border: 1px solid #531616;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .text-display {
+            background: #f8f9fc;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 25px;
+            min-height: 150px;
+            line-height: 2;
+            font-size: 19px;
+            color: #555;
+            margin-bottom: 20px;
+            user-select: none;
+        }
+
+        .text-display span {
+            position: relative;
+        }
+
+        .text-display .correct {
+            color: #16a34a;
+        }
+
+        .text-display .incorrect {
+            color: #dc2626;
+            background: #fee2e2;
+        }
+
+        .text-display .current {
+            border-left: 2px solid #667eea;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                border-color: transparent;
+            }
+        }
+
+        #inputText {
+            width: 100%;
+            height: 130px;
+            resize: none;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            padding: 18px;
+            font-size: 18px;
+            line-height: 1.6;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        #inputText:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        #inputText:disabled {
+            background: #f1f1f1;
+            cursor: not-allowed;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        button {
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        #startBtn {
+            background: #667eea;
+            color: white;
+        }
+
+        #startBtn:hover {
+            background: #5568d9;
+            transform: translateY(-2px);
+        }
+
+        #restartBtn {
+            background: #222;
+            color: white;
+        }
+
+        #restartBtn:hover {
+            background: #444;
+            transform: translateY(-2px);
+        }
+
+        .result {
+            display: none;
+            margin-top: 25px;
+            padding: 25px;
+            background: #f5f6fa;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .result h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .result-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .result-item p {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .result-item strong {
+            font-size: 28px;
+            color: #667eea;
+        }
+
+        .best-score {
+            margin-top: 20px;
+            color: #555;
+            font-size: 15px;
+        }
+
+        .message {
+            text-align: center;
+            margin-top: 15px;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        @media (max-width: 700px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .text-display {
+                font-size: 17px;
+                padding: 18px;
+            }
+
+            #inputText {
+                font-size: 16px;
+            }
+
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 400px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .stats {
+                gap: 8px;
+            }
+
+            .stat {
+                padding: 12px;
+            }
+
+            .stat span {
+                font-size: 21px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1> ⌨️ Typing Speed Test </h1>
+        <p>  Test your typing speed, accuracy and performance</p>
+    </div>
+
+    <div class="stats">
+
+        <div class="stat">
+            <h3>🕐Time</h3>
+            <span id="timer">30</span>
+        </div>
+
+        <div class="stat">
+            <h3>📈WPM</h3>
+            <span id="wpm">0</span>
+        </div>
+
+        <div class="stat">
+            <h3> ✅Accuracy</h3>
+            <span id="accuracy">100%</span>
+        </div>
+
+        <div class="stat">
+            <h3> ❌Errors</h3>
+            <span id="errors">0</span>
+        </div>
+
+    </div>
+
+    <div class="timer-box">
+        <label for="timeSelect">Test Duration:</label>
+
+        <select id="timeSelect">
+            <option value="30">30 Seconds</option>
+            <option value="60">60 Seconds</option>
+            <option value="120">2 Minutes</option>
+            <option value="180">3 minutes</option>
+            <option value="300">5 minutes </option>
+        </select>
+    </div>
+
+    <div class="text-display" id="textDisplay"></div>
+
+    <textarea
+        id="inputText"
+        placeholder="typing start kr do  "
+        disabled
+        spellcheck="false"
+    ></textarea>
+
+    <div class="buttons">
+        <button id="startBtn">Start Test</button>
+        <button id="restartBtn">Restart</button>
+    </div>
+
+    <div class="message" id="message"></div>
+
+    <div class="result" id="result">
+
+        <h2>🎉 Test Completed!</h2>
+
+        <div class="result-grid">
+
+            <div class="result-item">
+                <p>Typing Speed</p>
+                <strong id="finalWpm">0</strong>
+                <small> WPM</small>
+            </div>
+
+            <div class="result-item">
+                <p>Accuracy</p>
+                <strong id="finalAccuracy">0%</strong>
+            </div>
+
+            <div class="result-item">
+                <p>Errors</p>
+                <strong id="finalErrors">0</strong>
+            </div>
+
+        </div>
+
+        <div class="best-score">
+            🏆 Best WPM: <strong id="bestScore">0</strong>
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    const paragraphs = [
+
+       
+    "The quick brown fox jumps over the lazy dog. Learning to type faster can improve your productivity and help you complete your daily tasks more efficiently.",
+
+    "Frontend development is an exciting field where developers create beautiful and interactive websites using HTML CSS and JavaScript. Modern websites should be fast responsive and easy to use.",
+
+    "Technology continues to change the way people communicate learn and work. Good developers keep learning new skills and building useful projects to improve their knowledge and experience.",
+
+    "Practice makes a person better at any skill. Regular typing practice can improve your speed accuracy confidence and overall computer skills. Consistent practice is the key to success.",
+
+    "A successful developer understands the importance of clean code responsive design accessibility performance and a great user experience. Every project provides an opportunity to learn something new.",
+
+    "JavaScript is one of the most popular programming languages used for web development. It allows developers to create interactive websites and build powerful applications for users around the world.",
+
+    "React is a popular JavaScript library for building modern user interfaces. Developers can create reusable components which make applications easier to maintain and develop.",
+
+    "Web development requires creativity logical thinking and continuous learning. A frontend developer should understand HTML CSS JavaScript responsive design and modern development tools.",
+
+    "The internet has transformed the way people access information and communicate with each other. Websites and web applications have become an important part of everyday life.",
+
+    "Building projects is one of the best ways to improve programming skills. When developers create real applications they learn how different technologies work together to solve practical problems.",
+
+    "Responsive web design allows websites to work properly on different screen sizes including desktops tablets and mobile phones. A good website should provide a consistent user experience on every device.",
+
+    "Good user interface design makes a website simple attractive and easy to understand. Colors typography spacing buttons and navigation all play an important role in creating a better experience.",
+
+    "Git and GitHub are important tools for modern developers. Git helps developers track changes in their code while GitHub allows them to store and share projects online.",
+
+    "Learning programming takes time patience and regular practice. Beginners should start with basic concepts and gradually build more complex projects as their confidence increases.",
+
+    "A frontend developer converts designs into interactive web pages using different technologies. They work with layouts animations forms navigation components and APIs to create modern applications.",
+
+    "APIs allow web applications to communicate with servers and retrieve useful information. Developers can use APIs to display products weather information movies news and many other types of data.",
+
+    "Writing clean and readable code is an important habit for every developer. Well organized code makes debugging easier and helps other developers understand and maintain the project.",
+
+    "Performance is an important part of web development. Optimized images efficient JavaScript and good coding practices can make websites load faster and provide a better experience.",
+
+    "Learning never stops in the technology industry. New frameworks tools and techniques are introduced regularly so developers should continue improving their skills and exploring new technologies.",
+
+    "A strong portfolio can help a frontend developer demonstrate their skills to recruiters. Real projects show that a developer can solve problems and build useful applications.",
+
+    "Time management is important when working on software projects. Developers should divide large tasks into smaller steps and complete them systematically to achieve better results.",
+
+    "HTML provides the structure of a webpage while CSS controls its appearance and JavaScript adds interaction. Together these technologies form the foundation of frontend web development.",
+
+    "Modern websites often include search systems filters forms animations dashboards and interactive components. JavaScript makes it possible to create these features directly in the browser.",
+
+    "Debugging is an important skill for developers. When something does not work correctly developers should inspect the error understand its cause and test possible solutions.",
+
+    "Communication and teamwork are valuable skills for software developers. Developers often work with designers testers backend engineers and project managers to complete a product successfully."
+
+    ];
+
+
+    const textDisplay = document.getElementById("textDisplay");
+    const inputText = document.getElementById("inputText");
+
+    const timerElement = document.getElementById("timer");
+    const wpmElement = document.getElementById("wpm");
+    const accuracyElement = document.getElementById("accuracy");
+    const errorsElement = document.getElementById("errors");
+
+    const startBtn = document.getElementById("startBtn");
+    const restartBtn = document.getElementById("restartBtn");
+
+    const timeSelect = document.getElementById("timeSelect");
+
+    const result = document.getElementById("result");
+    const message = document.getElementById("message");
+
+    const finalWpm = document.getElementById("finalWpm");
+    const finalAccuracy = document.getElementById("finalAccuracy");
+    const finalErrors = document.getElementById("finalErrors");
+    const bestScore = document.getElementById("bestScore");
+
+
+    let currentText = "";
+
+    let timer = null;
+
+    let timeLeft = 30;
+
+    let testStarted = false;
+
+    let totalTyped = 0;
+
+    let totalErrors = 0;
+
+
+    // Load best score
+    let savedBest = localStorage.getItem("typingBestScore") || 0;
+
+    bestScore.textContent = savedBest;
+
+
+    // Select random paragraph
+    function loadText() {
+
+        const randomIndex =
+            Math.floor(Math.random() * paragraphs.length);
+
+        currentText = paragraphs[randomIndex];
+
+        textDisplay.innerHTML = "";
+
+        currentText.split("").forEach((character, index) => {
+
+            const span = document.createElement("span");
+
+            span.textContent = character;
+
+            if (index === 0) {
+                span.classList.add("current");
+            }
+
+            textDisplay.appendChild(span);
+
+        });
+
+    }
+
+
+    // Start Test
+    function startTest() {
+
+        if (testStarted) return;
+
+        testStarted = true;
+
+        timeLeft = parseInt(timeSelect.value);
+
+        timerElement.textContent = timeLeft;
+
+        inputText.disabled = false;
+
+        inputText.focus();
+
+        startBtn.disabled = true;
+
+        timeSelect.disabled = true;
+
+        result.style.display = "none";
+
+        message.textContent = "Start typing...";
+
+        totalTyped = 0;
+
+        totalErrors = 0;
+
+        loadText();
+
+        timer = setInterval(() => {
+
+            timeLeft--;
+
+            timerElement.textContent = timeLeft;
+
+            updateStats();
+
+            if (timeLeft <= 0) {
+
+                finishTest();
+
+            }
+
+        }, 1000);
+
+    }
+
+
+    // Input typing event
+    inputText.addEventListener("input", function () {
+
+        if (!testStarted) return;
+
+        const typedText = inputText.value;
+
+        totalTyped = typedText.length;
+
+        const characters =
+            textDisplay.querySelectorAll("span");
+
+        let errors = 0;
+
+        characters.forEach((span, index) => {
+
+            const typedCharacter = typedText[index];
+
+            span.classList.remove("correct");
+            span.classList.remove("incorrect");
+            span.classList.remove("current");
+
+            if (typedCharacter == null) {
+
+                if (index === typedText.length) {
+                    span.classList.add("current");
+                }
+
+            } else if (typedCharacter === span.textContent) {
+
+                span.classList.add("correct");
+
+            } else {
+
+                span.classList.add("incorrect");
+
+                errors++;
+
+            }
+
+        });
+
+        totalErrors = errors;
+
+        updateStats();
+
+        // Automatically finish when paragraph is completed
+        if (typedText.length >= currentText.length) {
+
+            finishTest();
+
+        }
+
+    });
+
+
+    // Update WPM and accuracy
+    function updateStats() {
+
+        const selectedTime =
+            parseInt(timeSelect.value);
+
+        const elapsedSeconds =
+            selectedTime - timeLeft;
+
+        const elapsedMinutes =
+            elapsedSeconds / 60;
+
+        let wpm = 0;
+
+        if (elapsedMinutes > 0) {
+
+            wpm = Math.round(
+                (totalTyped / 5) / elapsedMinutes
+            );
+
+        }
+
+        if (elapsedSeconds === 0) {
+            wpm = 0;
+        }
+
+        const accuracy =
+            totalTyped > 0
+                ? Math.round(
+                    ((totalTyped - totalErrors) / totalTyped) * 100
+                )
+                : 100;
+
+        wpmElement.textContent = Math.max(0, wpm);
+
+        accuracyElement.textContent =
+            Math.max(0, accuracy) + "%";
+
+        errorsElement.textContent = totalErrors;
+
+    }
+
+
+    // Finish Test
+    function finishTest() {
+
+        if (!testStarted) return;
+
+        clearInterval(timer);
+
+        testStarted = false;
+
+        inputText.disabled = true;
+
+        startBtn.disabled = false;
+
+        timeSelect.disabled = false;
+
+        const selectedTime =
+            parseInt(timeSelect.value);
+
+        const elapsedSeconds =
+            Math.max(1, selectedTime - timeLeft);
+
+        const elapsedMinutes =
+            elapsedSeconds / 60;
+
+        const wpm =
+            Math.round(
+                (totalTyped / 5) / elapsedMinutes
+            );
+
+        const accuracy =
+            totalTyped > 0
+                ? Math.round(
+                    ((totalTyped - totalErrors) / totalTyped) * 100
+                )
+                : 0;
+
+        finalWpm.textContent = Math.max(0, wpm);
+
+        finalAccuracy.textContent =
+            Math.max(0, accuracy) + "%";
+
+        finalErrors.textContent = totalErrors;
+
+        result.style.display = "block";
+
+        message.textContent = "Test completed!";
+
+        // Save best score
+        if (wpm > parseInt(savedBest)) {
+
+            savedBest = wpm;
+
+            localStorage.setItem(
+                "typingBestScore",
+                savedBest
+            );
+
+            bestScore.textContent = savedBest;
+
+        }
+
+    }
+
+    // Restart
+    function restartTest() {
+
+        clearInterval(timer);
+
+        testStarted = false;
+
+        timeLeft = parseInt(timeSelect.value);
+
+        timerElement.textContent = timeLeft;
+
+        wpmElement.textContent = "0";
+
+        accuracyElement.textContent = "100%";
+
+        errorsElement.textContent = "0";
+
+        inputText.value = "";
+
+        inputText.disabled = true;
+
+        startBtn.disabled = false;
+
+        timeSelect.disabled = false;
+
+        result.style.display = "none";
+
+        message.textContent = "";
+
+        totalTyped = 0;
+
+        totalErrors = 0;
+
+        loadText();
+
+    }
+
+
+
+    startBtn.addEventListener(
+        "click",
+        startTest
+    );
+
+
+    restartBtn.addEventListener(
+        "click",
+        restartTest
+    );
+
+
+    timeSelect.addEventListener(
+        "change",
+        function () {
+
+            timeLeft =
+                parseInt(timeSelect.value);
+
+            timerElement.textContent =
+                timeLeft;
+
+        }
+    );
+
+
+    // Initial setup
+    loadText();
+
+</script>
+
+</body>
+</html>
